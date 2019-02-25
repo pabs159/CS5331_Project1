@@ -14,6 +14,12 @@ and there by do whatever you wish with them.
 
 This code is adapted from the NVD3 example library. 
 
+The video file link is below: 
+Currently working on getting it to post into this README:
+
+https://drive.google.com/open?id=10-XTMDi0y0SyBQ1hkW_XvmvDeIJBBp4R
+
+
 ## Supported Browsers
 NVD3 runs best on WebKit based browsers. 
 

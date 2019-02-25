@@ -20,6 +20,19 @@ Currently working on getting it to post into this README:
 https://drive.google.com/open?id=10-XTMDi0y0SyBQ1hkW_XvmvDeIJBBp4R
 
 
+#----------------------
+
+The data was obtained from places like the Department of Homeland Security.
+
+Using Vim, all the data files were formated to fit a certain pattern so the regular expression
+could be applied to all the files. Of course, you could write custom functions to adapt to
+individual data sets. For simplicity sake, the format was the same accross all files for the most part. 
+
+While the data sets by themselves were not neccesarily super interesitng, the way to visually display them
+actually was more intersting. The US debt and population are not very good sets to be displayed on a stacked 
+graph for instance. But on seperate graphs they work better. For me detail, see the video above. 
+
+
 ## Supported Browsers
 NVD3 runs best on WebKit based browsers. 
 

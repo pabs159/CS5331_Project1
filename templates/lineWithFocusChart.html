@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<link href="{{ url_for('static', filename='src/nv.d3.css') }}" rel="stylesheet" type="text/css">
+
+<style>
+
+body {
+  overflow-y:scroll;
+}
+
+text {
+  font: 12px sans-serif;
+}
+
+svg {
+  display: block;
+}
+
+#chart1 svg {
+  height: 500px;
+  min-width: 100px;
+  min-height: 100px;
+}
+
+#chart2 svg { 
+    height: 500px;
+    min-width: 100px;
+    min-height: 100px;
+
+}
+
+</style>
+<body>
+
+  <div id="chart" class='with-3d-shadow with-transitions'>
+    <svg style="height: 500px;"></svg>
+  </div>
+  <div id="chart2" class='with-3d-shadow with-transitions'>
+    <svg style="height: 500px;"></svg>
+  </div>
+
+<script src="{{ url_for('static', filename='lib/d3.v3.js') }}"></script>
+<script src="{{ url_for('static', filename='nv.d3.js') }}"></script>
+<script src="{{ url_for('static', filename='src/tooltip.js') }}"></script>
+<script src="{{ url_for('static', filename='src/utils.js') }}"></script>
+<script src="{{ url_for('static', filename='src/models/legend.js') }}"></script>
+<script src="{{ url_for('static', filename='src/models/axis.js') }}"></script>
+<script src="{{ url_for('static', filename='src/models/scatter.js') }}"></script>
+<script src="{{ url_for('static', filename='src/models/line.js') }}"></script>
+<script src="{{ url_for('static', filename='src/models/lineWithFocusChart.js') }}"></script>
+<script src="{{ url_for('static', filename='stream_layers.js') }}"></script>
+<script>
+
+
+
+var jsonPop2k = JSON.parse({{data['jsonPop2k'] | tojson}});
+var jsonPop = JSON.parse({{data['jsonPop'] | tojson}});
+var jsonDebt = JSON.parse({{data['jsonDebt'] | tojson}});
+var jsonMortality = JSON.parse({{data['jsonMortality'] | tojson}});
+var jsonPopTotal = jsonPop.concat(jsonPop2k);
+var jsonImigration = JSON.parse({{data['jsonImigration'] | tojson}}); 
+var jsonDebtPerPerson = JSON.parse({{data['jsonDebtPerPerson'] | tojson}});
+jsonDebtPerPerson.reverse();
+
+
+data =[{
+        key : "US Population",
+        values: jsonPopTotal
+        },
+        {
+        key : "Mortality Rate",
+        values: jsonMortality
+
+        },
+        {
+        key : "Accounted Imigration",
+        values : jsonImigration
+
+        }
+        
+];
+
+data2 = [{
+
+        key : "US Debt Per Person",
+        values: jsonDebtPerPerson
+        }
+        ];
+
+nv.addGraph(function() {
+  var chart = nv.models.lineWithFocusChart()
+                        .x(function(d){return d[0]})
+                        .y(function(d){return d[1]});
+ // chart.transitionDuration(500);
+  chart.xAxis
+      //.tickFormat(d3.format(',f'));
+        .tickFormat(function(d) { console.log(d); console.log(new Date(d)); return d3.time.format('%x')(new Date(d)) });
+  chart.x2Axis
+        .tickFormat(function(d) { console.log(d); console.log(new Date(d)); return d3.time.format('%x')(new Date(d)) });
+        //.tickFormat(d3.format(',f'));
+
+  chart.yAxis
+      .tickFormat(d3.format('s'));
+  chart.y2Axis
+      .tickFormat(d3.format('s'));
+
+  d3.select('#chart svg')
+      //.datum(testData())
+      .data([data])
+      .call(chart);
+
+  nv.utils.windowResize(chart.update);
+
+  return chart;
+});
+
+
+nv.addGraph(function() {
+  var chart2 = nv.models.lineWithFocusChart()
+                        .x(function(d){return d[0]})
+                        .y(function(d){return d[1]});
+ // chart.transitionDuration(500);
+  chart2.xAxis
+      //.tickFormat(d3.format(',f'));
+        .tickFormat(function(d) { console.log(d); console.log(new Date(d)); return d3.time.format('%x')(new Date(d)) });
+  chart2.x2Axis
+        .tickFormat(function(d) { console.log(d); console.log(new Date(d)); return d3.time.format('%x')(new Date(d)) });
+        //.tickFormat(d3.format(',f'));
+
+  chart2.yAxis
+      .tickFormat(d3.format(',.2f'));
+  chart2.y2Axis
+      .tickFormat(d3.format(',.2f'));
+
+  d3.select('#chart2 svg')
+      //.datum(testData())
+      .data([data2])
+      .call(chart2);
+
+  nv.utils.windowResize(chart2.update);
+
+  return chart2;
+});
+
+</script>

@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<link href="{{ url_for('static', filename='src/nv.d3.css') }}" rel="stylesheet" type="text/css">
+<link href="{{ url_for('static', filename='teststyle.css') }}" rel="stylesheet" type='text/css'>
+<style>
+
+#chart, #chart2 {
+    height: 300px;
+    width: 1400px;
+    border-style: solid;
+    border-width: 10px;
+    margin 10px 10px 10px 10px;
+
+}
+#option {
+    margin 10px 10px 10px 10px;
+
+}
+
+</style>
+<body>
+	 <div class='navigation'>
+          Tests:
+          <a href="lineChartTest.html">Line Chart</a>
+          <a href="stackedAreaChartTest.html">Stacked Area</a>
+          <a href="cumulativeLineChart.html">Cumulative Line</a>
+          <a href="ScatterChartTest.html">Scatter</a>
+      </div>
+  <h3> Animated chart showing the change in population and the US national debt from 1900-2014</h3>
+
+<div id="option">
+    <input name="updateButton"
+           type="button"
+           value="Update"
+           onclick= "update()" />
+</div>
+<div id='chart' class='chart full with-transitions'>
+	<svg></svg>
+	<button id='start-stop-button'>Start/Stop Stream</button>
+</div>
+
+<div id='chart2' class='chart full with-transitions'>
+	<svg></svg>
+</div>
+
+<script src="{{ url_for('static', filename='lib/d3.v3.js') }}"></script>
+<script src="{{ url_for('static', filename='nv.d3.js') }}"></script>
+<script src="{{ url_for('static', filename='src/tooltip.js') }}"></script>
+<script src="{{ url_for('static', filename='src/utils.js') }}"></script>
+<script src="{{ url_for('static', filename='src/interactiveLayer.js') }}"></script>
+<script src="{{ url_for('static', filename='src/models/legend.js') }}"></script>
+<script src="{{ url_for('static', filename='src/models/axis.js') }}"></script>
+<script src="{{ url_for('static', filename='src/models/scatter.js') }}"></script>
+<script src="{{ url_for('static', filename='src/models/line.js') }}"></script>
+<script src="{{ url_for('static', filename='src/models/lineChart.js') }}"></script>
+<script src="{{ url_for('static', filename='src/models/historicalBar.js') }}"></script>
+<script src="{{ url_for('static', filename='src/models/historicalBarChart.js') }}"></script>
+<script>
+
+var chart;
+var color = "red";
+var key = "US Population 1900-1999";
+var data = [{
+	key: key,
+	color: color,
+	values: [
+  		{x: 1899, y: 75000000}
+	]
+    }
+];
+
+var data2 = [{
+	key: "US Debt",
+	color: "green",
+	values: [
+  		{x: 1899, y: 2000000000}
+	]
+    }
+];
+// add a Graph to the id "chart" and 
+nv.addGraph(function() {
+  
+  chart = nv.models.historicalBarChart();
+
+  chart
+      .x(function(d,i) { return d.x });
+
+  chart.xAxis // chart sub-models (ie. xAxis, yAxis, etc) when accessed directly, return themselves, not the parent chart, so need to chain separately
+      .tickFormat(d3.format('d'))
+      .axisLabel("Years")
+      ;
+
+  chart.yAxis
+      .axisLabel('Population (Millions)')
+      .tickFormat(d3.format("s"));
+
+  chart.showXAxis(true).showYAxis(true).rightAlignYAxis(true).margin({right: 100});
+
+  d3.select('#chart svg')
+      .data([data])
+      .transition().duration(300)
+      .call(chart);
+
+  console.log(data);
+  nv.utils.windowResize(chart.update);
+  return chart;
+});
+
+nv.addGraph(function() {
+  
+  chart2 = nv.models.historicalBarChart();
+
+  chart2
+      .x(function(d,i) { return d.x });
+
+  chart2.xAxis // chart sub-models (ie. xAxis, yAxis, etc) when accessed directly, return themselves, not the parent chart, so need to chain separately
+      .tickFormat(d3.format('d'))
+      .axisLabel("Years")
+      ;
+
+  chart2.yAxis
+      .axisLabel('US Debt')
+      .tickFormat(d3.format("s"));
+
+  chart2.showXAxis(true).showYAxis(true).rightAlignYAxis(true).margin({right: 100});
+
+  d3.select('#chart2 svg')
+      .data([data2])
+      .transition().duration(300)
+      .call(chart2);
+
+  console.log(data2);
+  nv.utils.windowResize(chart2.update);
+  return chart2;
+});
+
+var population = [];
+var JSON_dic = JSON.parse({{data['json_dic']|tojson}});
+var JSON_dic2000 = JSON.parse({{data['json_dic2000']|tojson}});
+var dicLength = JSON_dic.length;
+var dicLength2000 = JSON_dic2000.length;
+var jsonDebt = JSON.parse({{data['jsonDebt'] | tojson}});
+console.log(jsonDebt);
+console.log(JSON_dic.reverse());
+console.log(JSON_dic2000.reverse());
+
+   for (var ii = 0; ii < dicLength; ii++) {
+    pop_str = JSON_dic[ii].data;
+    pop_int = pop_str;
+    time_str = JSON_dic[ii].date;
+    console.log(time_str);
+    time_int = parseInt(time_str.substring(time_str.length-4,time_str.length),10)
+    console.log(time_int);
+    population.push({x: time_int, y: pop_int});
+    console.log(population);
+  }
+
+    console.log(JSON_dic2000);
+    var population2000 = [];
+    for (var xx = 0; xx < dicLength2000; xx++) {
+     
+    pop_str2000 = JSON_dic2000[xx].data;
+    console.log(pop_str2000)
+    pop_int2000 = pop_str2000
+    time_str2000 = JSON_dic2000[xx].date;
+    time_int2000 = parseInt(time_str2000.substring(time_str2000.length-4,time_str2000.length),10)
+    population2000.push({x: time_int2000, y: pop_int2000});
+    console.log(population2000)
+  }
+
+    var date;
+  for (var ss = 0; ss < jsonDebt.length; ss ++){
+    
+    timeDebt = jsonDebt[ss][0];
+    date = new Date(timeDebt)
+    jsonDebt[ss][0] = date.getFullYear();
+
+
+  }
+var popTotal = population.concat(population2000);
+console.log(popTotal);
+var popLength = popTotal.length;
+console.log(popLength);
+var run = true;
+var index = 0;
+var current_index = -1;
+var con_flag = false;
+setInterval(function(){
+	console.log('setInterval')
+    console.log(con_flag)    
+    console.log(run)
+    if (con_flag){
+        run = true;
+    }
+    else{
+        index = 0; 
+    }
+
+    if (!run) {
+	console.log('return')
+    return;
+    }
+    
+    ++current_index;
+    
+    if(popTotal[current_index].x == 1999 || popTotal[current_index].x == 2018){
+        run = false;
+        con_flag = false;
+    }
+    console.log(data[index])
+	
+    data[index].values.push({
+		x: popTotal[current_index].x,
+		y: popTotal[current_index].y
+	});
+    data2[index].values.push({
+		x: jsonDebt[current_index][0],
+		y: jsonDebt[current_index][1]
+	});
+    //console.log(data[0].values)
+	if (data[index].values.length > 125) {
+		data[index].values.shift();
+	}
+
+	chart.update();
+    chart2.update();
+}, 300);
+
+d3.select("#start-stop-button").on("click",function() {
+	run = !run;
+});
+
+function update() {
+    con_flag = true;
+   // data[0].key = 'US Population 1900 - 2014'; 
+   // data[0].color = 'blue';
+   
+    
+    data.push({
+    key : 'US Population 2000-2018',
+    color : 'blue',
+    values: [
+        {x: 2000, y: 272690813}
+        ]
+
+
+    })
+
+    //data[1].color = "blue";
+    //data[1].key = "US Population 2000 - 2018";
+    
+}
+</script>
+
+</body>
+</html>

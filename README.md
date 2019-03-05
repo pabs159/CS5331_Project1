@@ -14,6 +14,8 @@ and there by do whatever you wish with them.
 
 This code is adapted from the NVD3 example library. 
 
+<img width="1655" alt="screen shot 2019-03-04 at 8 16 35 pm" src="https://user-images.githubusercontent.com/47953786/53776359-725cc680-3ebb-11e9-91d9-464225daed06.png">
+
 The video file link is below: 
 Currently working on getting it to post into this README:
 
